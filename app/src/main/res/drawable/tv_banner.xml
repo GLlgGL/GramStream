@@ -1,0 +1,27 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp"
+    android:height="180dp"
+    android:viewportWidth="320"
+    android:viewportHeight="180">
+
+    <!-- Center Circle Background -->
+    <path
+        android:fillColor="#0A0A0C"
+        android:pathData="M160,90m-36,0a36,36 0 1,0 72,0a36,36 0 1,0 -72,0" />
+
+    <!-- Circle Border Accent -->
+    <path
+        android:fillColor="#26262E"
+        android:pathData="M160,52a38,38 0 1,0 0,76a38,38 0 1,0 0,-76zM160,55a35,35 0 1,1 0,70a35,35 0 1,1 0,-70z" />
+
+    <!-- Left Half Play Icon (Telegram Blue) -->
+    <path
+        android:fillColor="#0088CC"
+        android:pathData="M148,68 L160,76.5 L160,103.5 L148,112 Z" />
+
+    <!-- Right Half Play Icon (Play Purple) -->
+    <path
+        android:fillColor="#8B5CF6"
+        android:pathData="M160,76.5 L184,90 L160,103.5 Z" />
+
+</vector>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Focused or Selected State (Bright Orange) -->
+    <item android:color="#FF9F1C" android:state_focused="true" />
+    <item android:color="#FF9F1C" android:state_selected="true" />
+    <!-- Default Unfocused State (Grey) -->
+    <item android:color="#808088" />
+</selector>

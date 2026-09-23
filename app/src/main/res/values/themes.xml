@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.GramStream" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowBackground">#0A0A0C</item>
+        <item name="android:statusBarColor">#0A0A0C</item>
+        <item name="android:navigationBarColor">#0A0A0C</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="colorPrimary">#FF9F1C</item>
+        <item name="colorOnPrimary">#000000</item>
+
+        <!-- Android 12+ Black Splash Screen Fix -->
+        <item name="android:windowSplashScreenBackground">#0A0A0C</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+
+        <!-- Global Native Monospace/Pixel Font -->
+        <item name="fontFamily">monospace</item>
+        <item name="android:fontFamily">monospace</item>
+    </style>
+
+    <style name="BottomNavText">
+        <item name="android:textSize">9sp</item>
+        <item name="fontFamily">monospace</item>
+        <item name="android:fontFamily">monospace</item>
+    </style>
+</resources>

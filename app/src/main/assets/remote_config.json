@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "movie_query_templates": ["{title} {year}", "{title}"],
+  "series_query_templates": ["{title} S{s2}E{e2}", "{title} S{s2}"],
+  "title_threshold": 0.7,
+  "title_threshold_fuzzy": 0.6,
+  "max_streams": 25,
+  "video_extensions": ["mkv", "mp4", "avi", "webm", "mov", "flv", "wmv", "m4v", "ts"]
+}
