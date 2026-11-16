@@ -65,7 +65,7 @@ class AddonServer(port: Int) : NanoHTTPD(port) {
         val logoUrl = if (baseUrl.isNotBlank()) {
             "$baseUrl/logo.png"
         } else {
-            "https://emojiapi.dev/api/v1/diya_lamp/256.png"
+            "https://raw.githubusercontent.com/GLlgGL/GramStream/master/docs/logo.png"
         }
         put("logo", logoUrl)
 

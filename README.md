@@ -1,3 +1,11 @@
+<p align="center">
+  <img src="docs/banner.png" alt="GramStream" width="100%">
+</p>
+
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-GPLv3-blue.svg" alt="License: GPL v3"></a>
+</p>
+
 # GramStream
 
 GramStream is an Android app (phone and Android TV) that turns your Telegram
@@ -177,19 +185,85 @@ Requirements: Android Studio, JDK 17, Android SDK 34 (`minSdk 24`).
 3. Open the project in Android Studio, let Gradle sync, then use
    **Build → Build APK(s)**.
 
-## Usage
+## Setup guide
 
-1. Install the APK and enter your Telegram **API ID / API Hash**.
-2. Log in with your phone number, the login code and your 2FA password if you
-   have one.
-3. **Channels** tab: add the numeric chat ID of each channel with videos (for
-   example `-100…`), or turn on Global Search in **Config**.
-4. Optional: add a **TMDB API key** in **Config** for posters and IMDb-id
-   matching. IMDb-id matching needs it.
-5. **Home** tab: turn the server on, and start the Cloudflare Tunnel if you
-   want access from outside your network.
-6. In Stremio, open **Addons**, paste the manifest link (or scan the QR code)
-   and install.
+### 1. Get your Telegram API credentials
+1. Go to [my.telegram.org](https://my.telegram.org) and log in with your
+   phone number.
+2. Open **API development tools** and create an app. Any name and short name
+   will do.
+3. Copy the **App api_id** (a number) and the **App api_hash**. You enter
+   these in GramStream on first launch.
+
+### 2. Create your channel
+1. In Telegram, tap **New Channel**. A **private** channel is fine and
+   recommended.
+2. Upload or **forward** your movie files to it. You can send them as a
+   video or as a file/document; both work.
+3. The account you log in to GramStream with **must be a member** of the
+   channel. It's easiest to log in with the account that owns it.
+
+**Naming files:** GramStream reads the **caption** first, or the **file name**
+if there is no caption. Everything before the year becomes the title, and the
+year is the first `19xx`/`20xx` it finds. Dots and underscores become spaces.
+
+| Good name / caption | Parsed as |
+|---|---|
+| `Oppenheimer.2023.1080p.BluRay.x264.mkv` | Oppenheimer (2023) |
+| `The_Dark_Knight_2008_720p.mp4` | The Dark Knight (2008) |
+| `Interstellar (2014) 2160p.mkv` | Interstellar (2014) |
+
+- Always put the **year right after the title**. It makes TMDB and IMDb
+  matching much more accurate.
+- **Big files (over 2 GB / 4 GB Premium):** zip the movie, split the archive,
+  and upload the parts with the same base name: `Movie.2020.1080p.zip.001`,
+  `Movie.2020.1080p.zip.002`, …. GramStream joins them into **one** catalog
+  entry and streams them as a single video. The zip **must** use *Store*
+  (no compression; in 7-Zip set **Compression level: Store** and **Split to
+  volumes**), with one movie per archive, as a standard zip (not ZIP64).
+  GramStream streams the raw bytes, so a compressed zip won't play.
+- Only zip split archives are joined. Plain `.mkv.001` splits and
+  "Part 1 / CD1" files are not joined.
+- Series aren't supported yet. Only movies are.
+
+### 3. Get the channel ID
+Stremio needs the numeric ID, which starts with `-100`:
+- **Telegram Web (easiest):** open [web.telegram.org/a](https://web.telegram.org/a),
+  click your channel, and copy the number at the end of the address bar, for
+  example `https://web.telegram.org/a/#-1001234567890` → `-1001234567890`.
+- **Or with a bot:** forward any message from the channel to an ID bot such as
+  [@userinfobot](https://t.me/userinfobot) or
+  [@getidsbot](https://t.me/getidsbot). It replies with the channel's ID.
+
+> **Do I need to create a bot?** No. Some Telegram-to-Stremio servers need a
+> BotFather bot that is admin in your channels. GramStream logs in **as your
+> own Telegram account** through TDLib, so it can read any channel you've
+> joined. There's no bot token and no admin setup. The only bot you might use
+> is an ID bot like the ones above, to look up the channel ID.
+
+### 4. Set up the app
+1. Install the APK, then enter your **API ID / API Hash** (or tap
+   **Restore** to load a backup).
+2. Log in with your phone number, the login code Telegram sends you, and your
+   2FA password if you have one.
+3. **Channels** tab: paste the `-100…` channel ID and tap **Add**. Repeat for
+   each channel. Or turn on **Global Search** in **Config** to search every
+   chat you've joined.
+4. **Config** tab: add a **TMDB API key** (free at
+   [themoviedb.org](https://www.themoviedb.org/settings/api)). You need it for
+   posters and for Stremio's normal movie pages to find your files.
+5. **Home** tab: tap **Allow running in background**, then turn the server on.
+
+### 5. Connect Stremio
+- **Same Wi-Fi:** copy the `http://<phone-ip>:11470/manifest.json` link from
+  the Home tab, or scan its QR code.
+- **From anywhere:** tap **Start Cloudflare Tunnel**, wait for the
+  `https://….trycloudflare.com` address, then copy that link or scan the QR
+  code.
+- In Stremio, open **Addons**, paste the link into the search box and install.
+- Your files show up in the **Telegram** catalog on Stremio's Discover page.
+  When TMDB is set up, they also appear as streams on Stremio's normal movie
+  pages.
 
 ---
 
@@ -209,5 +283,51 @@ Requirements: Android Studio, JDK 17, Android SDK 34 (`minSdk 24`).
 - Not built yet: anime/Kitsu matching and an OTA self-updater.
 
 ---
+
+## License
+
+GramStream is free software, licensed under the
+**[GNU General Public License v3.0](LICENSE)** (GPL-3.0), the same license as
+[Telegram-Stremio](https://github.com/weebzone/Telegram-Stremio), which
+inspired it.
+
+You may use, study, modify and share it. If you distribute a modified version
+or an APK built from it, you must release its source code under GPL-3.0 too,
+and keep the copyright and license notices.
+
+```
+GramStream - stream your Telegram channels to Stremio from Android
+Copyright (C) 2026 GLlgGL
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+```
+
+Bundled third-party components keep their own licenses: TDLib (Boost
+Software License 1.0), cloudflared (Apache 2.0), NanoHTTPD (BSD 3-Clause),
+ZXing (Apache 2.0) and AndroidX/Material (Apache 2.0).
+
+---
+
+## Credits
+- The idea and design are based on
+  [weebzone/Telegram-Stremio](https://github.com/weebzone/Telegram-Stremio)
+  by Karan, a self-hosted Telegram → Stremio server (FastAPI, MongoDB,
+  PyroFork, GPL-3.0). GramStream brings the same concept to a single Android
+  device, with no VPS, database or bot.
+- [TDLib](https://github.com/tdlib/td) by Telegram,
+  [cloudflared](https://github.com/cloudflare/cloudflared) by Cloudflare,
+  [NanoHTTPD](https://github.com/NanoHttpd/nanohttpd),
+  [ZXing](https://github.com/zxing/zxing) and
+  [TMDB](https://www.themoviedb.org/) for metadata. *This product uses the
+  TMDB API but is not endorsed or certified by TMDB.*
+- [Stremio](https://www.stremio.com/) addon protocol.
 
 Vibe coded by [GLlgGL](https://github.com/GLlgGL)
