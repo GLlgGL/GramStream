@@ -13,6 +13,17 @@ directly from Telegram and support seeking. You don't need a VPS or a PC.
 To use it outside your home network, the app has a built-in **Cloudflare
 Tunnel** that gives you a public `https://….trycloudflare.com` URL with one tap.
 
+## Screenshot
+
+![GramStream home screen](docs/screenshots/home.jpg)
+
+The **Home** tab shows:
+- the logged-in Telegram account
+- the server switch and background-execution status
+- the Cloudflare Tunnel button
+- the addon manifest URL with a QR code to scan from Stremio
+- buttons to copy the link and clear the catalog cache
+
 ---
 
 ## Features
