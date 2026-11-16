@@ -222,16 +222,60 @@ year is the first `19xx`/`20xx` it finds. Dots and underscores become spaces.
 
 - Always put the **year right after the title**. It makes TMDB and IMDb
   matching much more accurate.
-- **Big files (over 2 GB / 4 GB Premium):** zip the movie, split the archive,
-  and upload the parts with the same base name: `Movie.2020.1080p.zip.001`,
-  `Movie.2020.1080p.zip.002`, …. GramStream joins them into **one** catalog
-  entry and streams them as a single video. The zip **must** use *Store*
-  (no compression; in 7-Zip set **Compression level: Store** and **Split to
-  volumes**), with one movie per archive, as a standard zip (not ZIP64).
-  GramStream streams the raw bytes, so a compressed zip won't play.
-- Only zip split archives are joined. Plain `.mkv.001` splits and
-  "Part 1 / CD1" files are not joined.
+- **Big files (over 2 GB):** zip and split them into parts, see
+  [Uploading big files](#uploading-big-files-zip-and-split) below.
 - Series aren't supported yet. Only movies are.
+
+### Uploading big files (zip and split)
+
+Telegram accepts files up to **2 GB** (4 GB with Premium). For a bigger
+movie, put it in a zip, split the zip into parts of **under 2 GB each**, and
+upload all the parts to the same channel. GramStream joins the parts into
+**one** entry in the catalog and plays them as a single video.
+
+#### With 7-Zip on Windows
+1. Install [7-Zip](https://www.7-zip.org/) if you don't have it.
+2. Right-click the movie file → **7-Zip** → **Add to archive…**
+3. Set the options:
+
+   | Option | Value |
+   |---|---|
+   | Archive | `Oppenheimer.2023.1080p.zip` (the movie's name, ending in `.zip`) |
+   | Archive format | **zip** |
+   | Compression level | **Store** (no compression) |
+   | Split to volumes, bytes | **1950M** |
+
+4. Click **OK**. 7-Zip creates the parts next to the movie:
+   ```
+   Oppenheimer.2023.1080p.zip.001   (1.9 GB)
+   Oppenheimer.2023.1080p.zip.002   (1.9 GB)
+   Oppenheimer.2023.1080p.zip.003   (the rest)
+   ```
+
+#### With the command line (Windows, Linux, macOS)
+```bash
+7z a -tzip -mx=0 -v1950m "Oppenheimer.2023.1080p.zip" "Oppenheimer.2023.1080p.mkv"
+```
+`-tzip` makes a zip, `-mx=0` is Store (no compression) and `-v1950m` splits
+it into 1950 MB parts.
+
+#### Rules for the parts
+- **One movie per zip.**
+- **Store only.** The zip must not be compressed.
+- **Part size:** 1950M keeps every part safely under Telegram's 2 GB limit.
+  With Premium you can use up to `3900M`.
+- **Names:** keep them exactly as 7-Zip made them, ending in `.zip.001`,
+  `.zip.002`, … (three digits). Don't rename the parts one by one, because
+  they must all share the same base name.
+- **Base name:** use the movie's title and year, for example
+  `Oppenheimer.2023.1080p`, just like single files. The catalog title comes
+  from part `.001`.
+- **Upload** every part, as a file, to the **same channel**.
+- **Captions:** leave them empty, or give every part the same caption. Don't
+  write "Part 1", "Part 2" and so on in the captions.
+- **Supported split format:** only `.zip.001` style splits are joined.
+  `.z01` splits (made by WinZip or `zip -s`), plain `.mkv.001` splits and
+  "CD1 / CD2" files are not.
 
 ### 3. Get the channel ID
 GramStream needs the channel's numeric ID. For channels it always starts with
