@@ -1,6 +1,5 @@
 package com.example.GramStream
 
-import android.R
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
@@ -10,7 +9,6 @@ import android.content.pm.ServiceInfo
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
-import android.net.NetworkRequest
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
@@ -57,27 +55,15 @@ class AddonForegroundService : Service() {
         fun isNetworkAllowed(context: Context): Boolean {
             Settings.init(context)
             val cm = context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                val activeNetwork = cm.activeNetwork ?: return false
-                val capabilities = cm.getNetworkCapabilities(activeNetwork) ?: return false
-                return if (Settings.wifiOnly) {
-                    // "Wi-Fi only" means "not on mobile data": wired Ethernet
-                    // (common on Android TV boxes) is allowed too.
-                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
-                        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
-                } else {
-                    capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-                }
+            val activeNetwork = cm.activeNetwork ?: return false
+            val capabilities = cm.getNetworkCapabilities(activeNetwork) ?: return false
+            return if (Settings.wifiOnly) {
+                // "Wi-Fi only" means "not on mobile data": wired Ethernet
+                // (common on Android TV boxes) is allowed too.
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
             } else {
-                @Suppress("DEPRECATION")
-                val networkInfo = cm.activeNetworkInfo ?: return false
-                @Suppress("DEPRECATION")
-                return if (Settings.wifiOnly) {
-                    (networkInfo.type == ConnectivityManager.TYPE_WIFI ||
-                        networkInfo.type == ConnectivityManager.TYPE_ETHERNET) && networkInfo.isConnected
-                } else {
-                    networkInfo.isConnected
-                }
+                capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
             }
         }
     }
@@ -88,7 +74,7 @@ class AddonForegroundService : Service() {
         val notification = NotificationCompat.Builder(this, "addon_service_channel")
             .setContentTitle("GramStream Service")
             .setContentText("GramStream Addon Server is running")
-            .setSmallIcon(R.drawable.stat_sys_download)
+            .setSmallIcon(android.R.drawable.stat_sys_download)
             .setOngoing(true)
             .build()
 
@@ -179,19 +165,12 @@ class AddonForegroundService : Service() {
         }
 
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                // Tracks the system's actual default route, not every network
-                // that individually satisfies NET_CAPABILITY_INTERNET. This is
-                // what fixes the Wi-Fi->4G false disconnect: onLost now only
-                // fires when there's truly no usable default network, not just
-                // when the *previous* transport specifically drops.
-                connectivityManager?.registerDefaultNetworkCallback(networkCallback!!)
-            } else {
-                val request = NetworkRequest.Builder()
-                    .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-                    .build()
-                connectivityManager?.registerNetworkCallback(request, networkCallback!!)
-            }
+            // Tracks the system's actual default route, not every network
+            // that individually satisfies NET_CAPABILITY_INTERNET. This is
+            // what fixes the Wi-Fi->4G false disconnect: onLost now only
+            // fires when there's truly no usable default network, not just
+            // when the *previous* transport specifically drops.
+            connectivityManager?.registerDefaultNetworkCallback(networkCallback!!)
         } catch (e: Exception) {
             DebugLog.log("Failed to register Network listener: ${e.message}")
         }
@@ -200,11 +179,8 @@ class AddonForegroundService : Service() {
     override fun onDestroy() {
         handler.removeCallbacks(enforceStorageTick)
         networkCallback?.let {
-            try {
-                connectivityManager?.unregisterNetworkCallback(it)
-            } catch (e: Exception) {
-                // Already unregistered
-            }
+            // Throws if it was already unregistered - safe to ignore
+            runCatching { connectivityManager?.unregisterNetworkCallback(it) }
         }
         server?.stop()
         server = null

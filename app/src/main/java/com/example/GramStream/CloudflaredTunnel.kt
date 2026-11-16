@@ -19,12 +19,7 @@ object CloudflaredTunnel {
     // exitValue() throws while the process is still running.
     fun isRunning(): Boolean {
         val p = process ?: return false
-        return try {
-            p.exitValue()
-            false
-        } catch (e: IllegalThreadStateException) {
-            true
-        }
+        return runCatching { p.exitValue() }.isFailure
     }
 
     fun start(context: Context, localPort: Int) {
