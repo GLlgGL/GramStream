@@ -15,7 +15,17 @@ object CloudflaredTunnel {
 
     private val urlRegex = Regex("""https://[a-z0-9-]+\.trycloudflare\.com""")
 
-    fun isRunning(): Boolean = process?.isAlive == true
+    // Process.isAlive() is API 26+, but minSdk is 24 (Android 7 TV boxes).
+    // exitValue() throws while the process is still running.
+    fun isRunning(): Boolean {
+        val p = process ?: return false
+        return try {
+            p.exitValue()
+            false
+        } catch (e: IllegalThreadStateException) {
+            true
+        }
+    }
 
     fun start(context: Context, localPort: Int) {
         if (isRunning()) return

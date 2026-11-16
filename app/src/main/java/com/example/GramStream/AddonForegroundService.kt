@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
@@ -16,6 +17,7 @@ import android.os.IBinder
 import android.os.Looper
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
+import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
 
 class AddonForegroundService : Service() {
@@ -59,7 +61,10 @@ class AddonForegroundService : Service() {
                 val activeNetwork = cm.activeNetwork ?: return false
                 val capabilities = cm.getNetworkCapabilities(activeNetwork) ?: return false
                 return if (Settings.wifiOnly) {
-                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+                    // "Wi-Fi only" means "not on mobile data": wired Ethernet
+                    // (common on Android TV boxes) is allowed too.
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
                 } else {
                     capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
                 }
@@ -68,7 +73,8 @@ class AddonForegroundService : Service() {
                 val networkInfo = cm.activeNetworkInfo ?: return false
                 @Suppress("DEPRECATION")
                 return if (Settings.wifiOnly) {
-                    networkInfo.type == ConnectivityManager.TYPE_WIFI && networkInfo.isConnected
+                    (networkInfo.type == ConnectivityManager.TYPE_WIFI ||
+                        networkInfo.type == ConnectivityManager.TYPE_ETHERNET) && networkInfo.isConnected
                 } else {
                     networkInfo.isConnected
                 }
@@ -86,7 +92,15 @@ class AddonForegroundService : Service() {
             .setOngoing(true)
             .build()
 
-        startForeground(1, notification)
+        // Android 14+ requires the type passed here to match the manifest
+        ServiceCompat.startForeground(
+            this, 1, notification,
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+            } else {
+                0
+            }
+        )
         registerNetworkListener()
     }
 
