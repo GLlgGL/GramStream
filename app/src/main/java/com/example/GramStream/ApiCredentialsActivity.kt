@@ -1,6 +1,7 @@
 package com.example.GramStream
 
 import android.app.UiModeManager
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
@@ -85,7 +86,12 @@ class ApiCredentialsActivity : AppCompatActivity() {
         }
 
         binding.restoreBackupText.setOnClickListener {
-            importBackupLauncher.launch(arrayOf("application/json", "*/*"))
+            try {
+                importBackupLauncher.launch(arrayOf("application/json", "text/plain", "*/*"))
+            } catch (e: ActivityNotFoundException) {
+                // Many Android TV boxes ship without a system file picker
+                Toast.makeText(this, "No file picker available on this device", Toast.LENGTH_LONG).show()
+            }
         }
 
         binding.continueButton.setOnClickListener {

@@ -1,5 +1,19 @@
-# Project exclude paths
+# Gradle / build output
 /.gradle/
-/app/build/
-/app/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/
 /build/
+/app/build/
+/.kotlin/
+*.apk
+*.aab
+
+# Local machine config (SDK path) - must not be committed
+local.properties
+
+# Android Studio per-user files
+/.idea/workspace.xml
+/.idea/deviceManager.xml
+/.idea/caches/
+/.idea/deploymentTargetSelector.xml
+/captures/
+*.iml
+.DS_Store

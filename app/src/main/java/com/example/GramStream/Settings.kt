@@ -113,6 +113,8 @@ object Settings {
     fun importBackupJson(jsonString: String): Boolean {
         return try {
             val json = JSONObject(jsonString)
+            // Reject JSON that isn't a GramStream backup instead of reporting success
+            if (!json.has("apiId") && !json.has("apiHash") && !json.has("chatIds")) return false
             if (json.has("apiId")) apiId = json.getInt("apiId")
             if (json.has("apiHash")) apiHash = json.getString("apiHash")
             if (json.has("tmdbApiKey")) tmdbApiKey = json.getString("tmdbApiKey")

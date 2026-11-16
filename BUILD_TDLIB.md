@@ -53,11 +53,8 @@ project and never touched again.
 TDLib's own Android build docs (most reliable if their script changes):
 https://github.com/tdlib/td/tree/master/example/android
 
-## Before you build
+## API credentials
 
-In `TdLibManager.kt`, fill in your own:
-```kotlin
-private const val API_ID = 0       // from my.telegram.org
-private const val API_HASH = ""    // from my.telegram.org
-```
-Same values you already used in `config.env` for the server version.
+You don't need to edit any code for the Telegram API ID / Hash. The app asks
+for them on first launch and stores them on the device
+(`ApiCredentialsActivity.kt` → `Settings.kt`).
