@@ -223,19 +223,56 @@ year is the first `19xx`/`20xx` it finds. Dots and underscores become spaces.
 - Series aren't supported yet. Only movies are.
 
 ### 3. Get the channel ID
-Stremio needs the numeric ID, which starts with `-100`:
-- **Telegram Web (easiest):** open [web.telegram.org/a](https://web.telegram.org/a),
-  click your channel, and copy the number at the end of the address bar, for
-  example `https://web.telegram.org/a/#-1001234567890` → `-1001234567890`.
-- **Or with a bot:** forward any message from the channel to an ID bot such as
-  [@userinfobot](https://t.me/userinfobot) or
-  [@getidsbot](https://t.me/getidsbot). It replies with the channel's ID.
+GramStream needs the channel's numeric ID. For channels it always starts with
+**`-100`**, for example `-1001234567890`. Any of these four methods works.
 
-> **Do I need to create a bot?** No. Some Telegram-to-Stremio servers need a
-> BotFather bot that is admin in your channels. GramStream logs in **as your
+#### Method A: with an ID bot (works on phone)
+1. In Telegram, search for **[@getidsbot](https://t.me/getidsbot)** (or
+   **[@userinfobot](https://t.me/userinfobot)**, or
+   **[@RawDataBot](https://t.me/RawDataBot)**) and tap **Start**.
+2. Open **your channel**, long-press any message (for example one of your
+   movie files) and tap **Forward**.
+3. Pick the bot's chat as the destination and send.
+4. The bot replies with info about where the message came from. Copy the ID
+   shown for the **origin chat / forwarded from chat**:
+   - **@getidsbot:** under **Origin chat** → `id: -1001234567890`
+   - **@userinfobot:** the line with the channel's **Id**
+   - **@RawDataBot:** in the JSON, `"forward_from_chat": { "id": -1001234567890, … }`
+5. Make sure you copy the **channel** ID that starts with `-100`, not your own
+   user ID (a positive number).
+
+> If forwarding is blocked (the channel has **Restrict saving content**
+> turned on), use Method B or C instead. The bot only reads the forwarded
+> message's info; it doesn't need to join or be admin in your channel.
+
+#### Method B: from a message link (no bot needed)
+1. In your channel, long-press (or right-click) any message and tap **Copy
+   Message Link**.
+2. For a private channel you get a link like `https://t.me/c/1234567890/42`.
+3. Take the number between `/c/` and the next `/` and put **`-100`** in front
+   of it: `1234567890` → **`-1001234567890`**.
+
+#### Method C: Telegram Web (on a PC)
+1. Open [web.telegram.org/a](https://web.telegram.org/a) and click your
+   channel.
+2. The address bar shows something like
+   `https://web.telegram.org/a/#-1001234567890`. The number after `#` is the
+   ID.
+3. If you see the `/k/` version (`…/k/#-1234567890`) without the `-100`,
+   replace the `-` with **`-100`**: `-1234567890` → `-1001234567890`.
+
+#### Method D: Telegram Desktop
+1. Go to **Settings → Advanced → Experimental settings** and turn on **Show
+   Peer IDs in Profile**.
+2. Open the channel's info page. The ID is shown there. If it doesn't start
+   with `-100`, add `-100` in front.
+
+> **Do I need to create my own bot (BotFather)?** No. Some
+> Telegram-to-Stremio servers need a BotFather bot that is admin in your
+> channels. GramStream logs in **as your
 > own Telegram account** through TDLib, so it can read any channel you've
 > joined. There's no bot token and no admin setup. The only bot you might use
-> is an ID bot like the ones above, to look up the channel ID.
+> is a public ID bot from Method A, once, to look up the channel ID.
 
 ### 4. Set up the app
 1. Install the APK, then enter your **API ID / API Hash** (or tap
